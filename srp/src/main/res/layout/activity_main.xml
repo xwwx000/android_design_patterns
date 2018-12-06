@@ -6,19 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
-
     <ImageView
         android:id="@+id/imgv_main_show"
         android:layout_width="200dp"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
+        android:scaleType="fitCenter"
         android:layout_gravity="center_horizontal"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="加载"
-        android:onClick="loadImage" />
+        android:onClick="loadImage"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>
