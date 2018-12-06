@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imgv_main_show;
     ImageLoader imageLoader = new ImageLoader();
+    DoubleCache doubleCache = new DoubleCache();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadImage(View view){
         String url = "https://avatar.csdn.net/E/5/4/3_wuqilianga.jpg";
-        imageLoader.setmImageCache(new DoubleCache());
+
+        imageLoader.setmImageCache(doubleCache);
         imageLoader.displayImage(url,imgv_main_show);
     }
 }
