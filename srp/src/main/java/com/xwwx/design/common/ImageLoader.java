@@ -21,54 +21,47 @@ import java.util.concurrent.Executors;
  */
 
 public class ImageLoader {
-    LruCache<String,Bitmap> mImageCache;
+    ImageCache mImageCache = new MemoryCache();
     ExecutorService mExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     Handler mUihandler = new Handler(Looper.getMainLooper());
-    String mTag = "srp";
-    public ImageLoader(){
-        initImageCache();
+
+    public void setmImageCache(ImageCache imageCache){
+        mImageCache = imageCache;
     }
 
-    private void initImageCache() {
-        final int maxMemory = (int)(Runtime.getRuntime().maxMemory()/1024);
-        mImageCache = new LruCache<String,Bitmap>(maxMemory/4){
-            @Override
-            protected int sizeOf(String key,Bitmap bitmap){
-                return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-            }
-        };
-    }
-
-    public void displayImage(final String url,final ImageView imageView){
-        mExecutorService.submit(new Runnable() {
+    private void updateImageView(final ImageView imageView,final Bitmap bitmap){
+        mUihandler.post(new Runnable() {
             @Override
             public void run() {
-                Bitmap bitmap = mImageCache.get(url);
-                if(bitmap == null){
-                    bitmap = downloadImage(url);
-                    if(bitmap == null){
-                        return;
-                    }else {
-                        Log.v(mTag,"图片来自于下载!");
-                        mImageCache.put(url,bitmap);
-                        Map<String,Bitmap> map =  mImageCache.snapshot();
-                        for(Map.Entry<String,Bitmap> entry : map.entrySet()){
-                            Log.v(mTag,"key:"+entry.getKey());
-                        }
-                    }
-                }else{
-                    Log.v(mTag,"图片自于缓存!");
-                }
-                updateImageView(imageView,bitmap);
+                imageView.setImageBitmap(bitmap);
             }
         });
     }
 
-    private void updateImageView(final ImageView imageView,final Bitmap bmp){
-        mUihandler.post(new Runnable() {
+    public void displayImage(final String url,final ImageView imageView){
+       Bitmap bitmap = mImageCache.get(url);
+       if(bitmap == null){
+           //下载图片
+           Log.v(Constants.TAG,"图片来自下载!");
+           submitLoadRequest(url,imageView);
+       }else{
+           updateImageView(imageView,bitmap);
+       }
+    }
+
+    private void submitLoadRequest(final String url,final ImageView imageView){
+        imageView.setTag(url);
+        mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                imageView.setImageBitmap(bmp);
+                Bitmap bitmap = downloadImage(url);
+                if(bitmap == null){
+                    return;
+                }
+                if(imageView.getTag().equals(url)){
+                    updateImageView(imageView,bitmap);
+                }
+                mImageCache.put(url,bitmap);
             }
         });
     }

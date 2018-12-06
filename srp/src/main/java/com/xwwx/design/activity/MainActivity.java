@@ -7,7 +7,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.xwwx.design.R;
+import com.xwwx.design.common.DoubleCache;
 import com.xwwx.design.common.ImageLoader;
+import com.xwwx.design.common.MemoryCache;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadImage(View view){
         String url = "https://avatar.csdn.net/E/5/4/3_wuqilianga.jpg";
+        imageLoader.setmImageCache(new DoubleCache());
         imageLoader.displayImage(url,imgv_main_show);
     }
 }
